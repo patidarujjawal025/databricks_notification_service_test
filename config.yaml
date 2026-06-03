@@ -1,0 +1,12 @@
+databricks:
+  analyticshost: ${DATABRICKS_ANALYTICSHOST}
+  analyticstoken: ${DATABRICKS_ANALYTICS_MUMBAI_TOKEN}
+
+opsgenie:
+  apikey: ${OPSGENIE_API_KEY}
+  url: "https://api.opsgenie.com/v2/alerts"
+  infra_oncall: "ujjawal.patidar@swiggy.in"
+  code_oncall: "parshant.sharma@swiggy.in"
+
+server:
+  port: 8080

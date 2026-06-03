@@ -1,0 +1,72 @@
+templateVersion: 2.0
+meta:
+  org: "dip"
+  pod: "data-platform"
+  name: "dbr-notifier"
+  tier: 2
+  version: "1.0"
+  frameworks:
+    - name: "go"
+      version: "Go_1.21"
+
+infra:
+  compute:
+    type: "lambda"
+    memory: "128Mi"
+    timeout: "300s"
+    retry: 1
+
+sos:
+  type: "core_tech_capability"
+  name: "stream_processing"
+
+envVar:
+  config:
+    ref: "Databricks_Notification_Service/conf/"
+  secret:
+    - DATABRICKS_ANALYTICS_MUMBAI_TOKEN
+    - OPSGENIE_API_KEY
+
+pipeline:
+  stages:
+    - name: "CI"
+      env: "ci"
+      actions:
+        - type: "test"
+          name: "unit"
+          params:
+            command: "make test COMPONENT=Databricks_Notification_Service"
+        - type: "codeCoverage"
+          name: "unit"
+          params:
+            exclusions: ""
+            inclusions: "Databricks_Notification_Service/**"
+            coverageExclusions: "**/cmd/**,**/conf/**,**/constants/**,**/initialize/**,**/types/**"
+            testExclusions: ""
+            testInclusions: "**/*_test.go"
+            cpdExclusions: ""
+            coverageReportPaths: "Databricks_Notification_Service/coverage-unit.out"
+        - type: "build"
+          name: "Build"
+          params:
+            command: ""
+            uploadPackage:
+              - pkg: "docker"
+                clusterName: "dbr-notifier"
+                file: "Databricks_Notification_Service/Dockerfile"
+
+    - name: "uat"
+      env: "staging"
+      actions:
+        - type: "deploy"
+          name: "deploy"
+          params:
+            strategy: "rolling"
+
+    - name: "production"
+      env: "production"
+      actions:
+        - type: "deploy"
+          name: "deploy"
+          params:
+            strategy: "rolling"

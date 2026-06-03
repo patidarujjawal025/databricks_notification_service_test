@@ -1,0 +1,9 @@
+# compiled binaries
+server
+main
+
+# IDE
+.idea/
+
+# test coverage output
+*.out
